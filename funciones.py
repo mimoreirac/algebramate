@@ -5,7 +5,7 @@ def LLenarMatriz(nombre):
     matriz = [[0 for _ in range(columnas)] for _ in range(filas)]
     for i in range(len(matriz)):
         for j in range(len(matriz[0])):
-            matriz[i][j] = int(input(f"Ingrese el número en la posición {i} , {j}: "))
+            matriz[i][j] = float(input(f"Ingrese el número en la posición {i} , {j}: "))
         
     return matriz
 
@@ -25,6 +25,9 @@ def CuadradaONo(matriz):
 
 def DeterminanteMatriz(matriz): # Para obtener determinante utilizando el metodo de Laplace
     if CuadradaONo(matriz):
+        if len(matriz) == 1:
+            return matriz[0][0]
+
         if len(matriz) == 2:
             determinante = matriz[0][0] * matriz[1][1] - matriz[1][0] * matriz[0][1]
             return determinante
