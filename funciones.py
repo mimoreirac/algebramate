@@ -58,13 +58,27 @@ def llenar_sistema():
         
     return matriz
 
-def matriz_modificada(matriz, columna_reemplazar): # Para poder utilizar el metodo de Cramer
-    matriz_resultante = [[0 for _ in range(3)] for _ in range(3)]
-    for i in range(3):
-        for j in range(3):
-            if j == columna_reemplazar:
-                matriz_resultante[i][j] = matriz[i][3]
-            else:
-                matriz_resultante[i][j] = matriz[i][j]
-    return matriz_resultante
+def matrices_modificadas(matriz): # Para poder utilizar el metodo de Cramer
+    matrices = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(4)] # Lista de matrices para generar 4 matrices 3x3
+
+    for i in range(3): # matrices
+        for j in range(3): # columnas
+            for k in range(3): # filas
+                if j == i:
+                    matrices[i][k][j] = matriz[k][3] # Cambia la columna por términos independientes
+                else:
+                    matrices[i][k][j] = matriz[k][j]
+
+    # Rellena la cuarta matriz con las primeras 3 columnas de la matriz original
+    for k in range(3):  # filas
+        for j in range(3):  # columnas
+            matrices[3][k][j] = matriz[k][j]  # Copia los valores originales (sin los términos independientes)
+
+    return matrices[0], matrices[1], matrices[2], matrices[3]
+
+def float_a_entero(numero): # Facilidad de lectura, si el número no es fraccionario
+    if isinstance(numero, float) and numero.is_integer():
+        return int(numero)
+    return numero
+
 

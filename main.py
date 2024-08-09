@@ -1,1 +1,1 @@
-import funciones
+import funciones as fn
