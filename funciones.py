@@ -42,22 +42,6 @@ def DeterminanteMatriz(matriz): # Para obtener determinante utilizando el metodo
 
         return determinante
 
-        # Metodo anterior, se puede mejorar
-        # determinante = 0
-        # for j in range(len(matriz)):
-        #     submatriz = [[0 for _ in range(len(matriz)-1)] for _ in range(len(matriz)-1)]
-        #     for i in range(1, len(matriz)):
-        #         col = 0
-        #         for k in range(len(matriz)):
-        #             if k != j:
-        #                 submatriz[i-1][col] = matriz[i][k]
-        #                 col += 1
-            
-        #     cofactor = matriz[0][j] * DeterminanteMatriz(submatriz) * (-1) ** j
-        #     determinante += cofactor
-        
-        # return determinante
-
 def llenar_sistema():
     print("Ingrese los datos del sistema de ecuaciones 3x3.")
     filas = 3
@@ -66,10 +50,11 @@ def llenar_sistema():
     for i in range(len(matriz)):
         print(f"Ingrese los valores de la ecuación {i+1}:")
         for j in range(len(matriz[0])):
-            if j == 3:
-                matriz[i][j] = float(input(f"Ingrese el valor independiente: "))
+            if j == columnas - 1:
+                valor = float(input(f"Ingrese el valor independiente: "))
             else:
-                matriz[i][j] = float(input(f"Ingrese la variable {j+1}: "))
+                valor = float(input(f"Ingrese el coeficiente de la variable x{j+1}: "))
+            matriz[i][j] = valor
         
     return matriz
 
