@@ -23,7 +23,7 @@ def CuadradaONo(matriz):
 
     return matrizcuadrada
 
-def DeterminanteMatriz(matriz): # Utilizando el metodo de Laplace
+def determinante_matriz(matriz): # Utilizando el metodo de Laplace
     if CuadradaONo(matriz):
         if len(matriz) == 1:
             return matriz[0][0]
@@ -37,7 +37,7 @@ def DeterminanteMatriz(matriz): # Utilizando el metodo de Laplace
         for j in range(len(matriz)):
             submatriz = [fila[:j] + fila[j+1:] for fila in matriz[1:]]            
             
-            cofactor = matriz[0][j] * DeterminanteMatriz(submatriz) * (-1) ** j
+            cofactor = matriz[0][j] * determinante_matriz(submatriz) * (-1) ** j
             determinante += cofactor
 
         return determinante
@@ -71,21 +71,39 @@ def matrices_modificadas(matriz): # Para poder utilizar el metodo de Cramer
 
     return matrices[0], matrices[1], matrices[2], matrices[3]
 
-def float_a_entero(numero): # Facilidad de lectura, si el número no es fraccionario
+def float_a_entero(numero): # Para facilitar la lectura, si el número no es fraccionario
     if isinstance(numero, float) and numero.is_integer():
         return int(numero)
     return numero
 
+def cramer(sistema):
+    m1,m2,m3,m4 = matrices_modificadas(sistema)
+    det_Ax = float_a_entero(determinante_matriz(m1))
+    det_Ay = float_a_entero(determinante_matriz(m2))
+    det_Az = float_a_entero(determinante_matriz(m3))
+    det_A = float_a_entero(determinante_matriz(m4))
+    if det_A == 0:
+        raise ValueError("El sistema no tiene solución única (determinante del sistema es cero)")
+    x,y,z = (float_a_entero(det_i / det_A) for det_i in (det_Ax, det_Ay, det_Az))
+
+    return x,y,z
+
+def transponer_matriz(matriz):
+    return [[matriz[j][i] for j in range(len(matriz))] for i in range(len(matriz[0]))]
+
+def cofactor_matriz(matriz):
+    n = len(matriz)
+    cofactor = [[0 for _ in range(n)] for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            submatriz = [row[:j] + row[j+1:] for row in (matriz[:i] + matriz[i+1:])]
+            cofactor[i][j] = ((-1) ** (i+j)) * determinante_matriz(submatriz)
+    return cofactor
+
+
+def matriz_adjunta(matriz):
+    cofactor = cofactor_matriz(matriz)
+    return transponer_matriz(cofactor)
 
 sistemaA = llenar_sistema()
-ImprimirMatriz(sistemaA)
-print()
-m1,m2,m3,m4 = matrices_modificadas(sistemaA)
-print()
-ImprimirMatriz(m1)
-print()
-ImprimirMatriz(m2)
-print()
-ImprimirMatriz(m3)
-print()
-ImprimirMatriz(m4)
+cramer(sistemaA)
