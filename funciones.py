@@ -23,15 +23,15 @@ def CuadradaONo(matriz):
 
     return matrizcuadrada
 
-def DeterminanteMatriz(matriz): # Utilizando el metodo de Laplace
+def DeterminanteMatriz(matriz): # Para obtener determinante utilizando el metodo de Laplace
     if CuadradaONo(matriz):
         if len(matriz) == 2:
             determinante = matriz[0][0] * matriz[1][1] - matriz[1][0] * matriz[0][1]
             return determinante
+            
         # Recursivo, si la matriz es mayor a 2x2
         determinante = 0
         for j in range(len(matriz)):
-            # Crea submatriz
             submatriz = [[0 for _ in range(len(matriz)-1)] for _ in range(len(matriz)-1)]
             for i in range(1, len(matriz)):
                 col = 0
@@ -40,7 +40,6 @@ def DeterminanteMatriz(matriz): # Utilizando el metodo de Laplace
                         submatriz[i-1][col] = matriz[i][k]
                         col += 1
             
-            # Calcula cofactor y lo anade al determinante
             cofactor = matriz[0][j] * DeterminanteMatriz(submatriz) * (-1) ** j
             determinante += cofactor
         
