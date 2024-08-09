@@ -35,23 +35,51 @@ def DeterminanteMatriz(matriz): # Para obtener determinante utilizando el metodo
         # Recursivo, si la matriz es mayor a 2x2
         determinante = 0
         for j in range(len(matriz)):
-            submatriz = [[0 for _ in range(len(matriz)-1)] for _ in range(len(matriz)-1)]
-            for i in range(1, len(matriz)):
-                col = 0
-                for k in range(len(matriz)):
-                    if k != j:
-                        submatriz[i-1][col] = matriz[i][k]
-                        col += 1
+            submatriz = [fila[:j] + fila[j+1:] for fila in matriz[1:]]            
             
             cofactor = matriz[0][j] * DeterminanteMatriz(submatriz) * (-1) ** j
             determinante += cofactor
-        
+
         return determinante
 
+        # Metodo anterior, se puede mejorar
+        # determinante = 0
+        # for j in range(len(matriz)):
+        #     submatriz = [[0 for _ in range(len(matriz)-1)] for _ in range(len(matriz)-1)]
+        #     for i in range(1, len(matriz)):
+        #         col = 0
+        #         for k in range(len(matriz)):
+        #             if k != j:
+        #                 submatriz[i-1][col] = matriz[i][k]
+        #                 col += 1
+            
+        #     cofactor = matriz[0][j] * DeterminanteMatriz(submatriz) * (-1) ** j
+        #     determinante += cofactor
+        
+        # return determinante
 
-matrizA = LLenarMatriz("A")
-determinanteA = DeterminanteMatriz(matrizA)
+def llenar_sistema():
+    print("Ingrese los datos del sistema de ecuaciones 3x3.")
+    filas = 3
+    columnas = 4
+    matriz = [[0 for _ in range(columnas)] for _ in range(filas)]
+    for i in range(len(matriz)):
+        print(f"Ingrese los valores de la ecuación {i+1}:")
+        for j in range(len(matriz[0])):
+            if j == 3:
+                matriz[i][j] = float(input(f"Ingrese el valor independiente: "))
+            else:
+                matriz[i][j] = float(input(f"Ingrese la variable {j+1}: "))
+        
+    return matriz
 
-ImprimirMatriz(matrizA)
-print()
-print(f"El determinante es {determinanteA}")
+
+# matrizA = LLenarMatriz("A")
+# determinanteA = DeterminanteMatriz(matrizA)
+
+# ImprimirMatriz(matrizA)
+# print()
+# print(f"El determinante es {determinanteA}")
+
+ecuacion1 = llenar_sistema()
+ImprimirMatriz(ecuacion1)
