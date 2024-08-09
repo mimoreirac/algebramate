@@ -62,12 +62,12 @@ def matrices_modificadas(matriz): # Para poder utilizar el metodo de Cramer
     matrices = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(4)] # Lista de matrices para generar 4 matrices 3x3
 
     for i in range(4): # matrices
-        for j in range(3): # columnas
-            for k in range(3): # filas
-                if i < 3 and j == i:
-                    matrices[i][k][j] = matriz[k][3] # Cambia la columna por términos independientes
+        for j in range(3): # filas
+            for k in range(3): # columnas
+                if i < 3 and k == i:
+                    matrices[i][j][k] = matriz[j][3] # Cambia la columna por términos independientes
                 else:
-                    matrices[i][k][j] = matriz[k][j] # Para la última matriz, descarta los independientes
+                    matrices[i][j][k] = matriz[j][k] # Para la última matriz, descarta los independientes
 
     return matrices[0], matrices[1], matrices[2], matrices[3]
 
@@ -77,3 +77,15 @@ def float_a_entero(numero): # Facilidad de lectura, si el número no es fraccion
     return numero
 
 
+sistemaA = llenar_sistema()
+ImprimirMatriz(sistemaA)
+print()
+m1,m2,m3,m4 = matrices_modificadas(sistemaA)
+print()
+ImprimirMatriz(m1)
+print()
+ImprimirMatriz(m2)
+print()
+ImprimirMatriz(m3)
+print()
+ImprimirMatriz(m4)
