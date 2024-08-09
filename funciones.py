@@ -23,7 +23,7 @@ def CuadradaONo(matriz):
 
     return matrizcuadrada
 
-def DeterminanteMatriz(matriz): # Para obtener determinante utilizando el metodo de Laplace
+def DeterminanteMatriz(matriz): # Utilizando el metodo de Laplace
     if CuadradaONo(matriz):
         if len(matriz) == 1:
             return matriz[0][0]
@@ -58,13 +58,13 @@ def llenar_sistema():
         
     return matriz
 
+def matriz_modificada(matriz, columna_reemplazar): # Para poder utilizar el metodo de Cramer
+    matriz_resultante = [[0 for _ in range(3)] for _ in range(3)]
+    for i in range(3):
+        for j in range(3):
+            if j == columna_reemplazar:
+                matriz_resultante[i][j] = matriz[i][3]
+            else:
+                matriz_resultante[i][j] = matriz[i][j]
+    return matriz_resultante
 
-# matrizA = LLenarMatriz("A")
-# determinanteA = DeterminanteMatriz(matrizA)
-
-# ImprimirMatriz(matrizA)
-# print()
-# print(f"El determinante es {determinanteA}")
-
-ecuacion1 = llenar_sistema()
-ImprimirMatriz(ecuacion1)
