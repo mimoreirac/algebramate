@@ -12,6 +12,11 @@ def LLenarMatriz(nombre): # Para depuracion
 def matriz_vacia(filas, columnas):
     return [[0 for _ in range(columnas)] for _ in range(filas)]
 
+def float_a_entero(numero): # Para facilitar la lectura, si el número no es fraccionario
+    if isinstance(numero, float) and numero.is_integer():
+        return int(numero)
+    return numero
+
 def ImprimirMatriz(matriz):
     for i in matriz:
         for j in i:
@@ -42,7 +47,6 @@ def determinante_matriz(matriz): # Utilizando el metodo de Laplace
 
         return determinante
         
-
 def llenar_sistema():
     print("Ingrese los datos del sistema de ecuaciones 3x3.")
     matriz = matriz_vacia(3, 4)
@@ -70,10 +74,19 @@ def matrices_modificadas(matriz): # Para poder utilizar el metodo de Cramer
 
     return matrices[0], matrices[1], matrices[2], matrices[3]
 
-def float_a_entero(numero): # Para facilitar la lectura, si el número no es fraccionario
-    if isinstance(numero, float) and numero.is_integer():
-        return int(numero)
-    return numero
+def matriz_independientes(matriz):
+    if not len(matriz) == 3 or not len(matriz[0]) == 4:
+        raise ValueError("No es una matriz 3x4")
+    else:
+        matrizA = matriz_vacia(3,3)
+        independientes = matriz_vacia(len(matriz),1)
+        for i in range(len(independientes)):
+            for j in range(len(independientes[0])):
+                independientes[i][j] = matriz[i][3]
+        for i in range(len(matrizA)):
+            for j in range(len(matrizA[0])):
+                matrizA[i][j] = matriz[i][j]
+        return matrizA, independientes
 
 def cramer(sistema):
     m1,m2,m3,m4 = matrices_modificadas(sistema)
@@ -98,7 +111,6 @@ def cofactor_matriz(matriz):
             submatriz = [row[:j] + row[j+1:] for row in (matriz[:i] + matriz[i+1:])]
             cofactor[i][j] = ((-1) ** (i+j)) * determinante_matriz(submatriz)
     return cofactor
-
 
 def matriz_adjunta(matriz):
     cofactor = cofactor_matriz(matriz)
@@ -127,10 +139,32 @@ def multiplicacion_escalar(numero, matriz):
             resultado[i][j] = numero * matriz[i][j]
     return resultado
 
-matrizA = [
-    [1,0,0],
-    [0,1,0],
-    [0,0,1]
-]
+def algebra_matricial(matriz):
+    matriz_base,independientes = matriz_independientes(matriz)
+    det_base = 1 / determinante_matriz(matriz_base)
+    resultado = multiplicacion_matrices(matriz_adjunta(matriz_base), independientes)
+    resultado = multiplicacion_escalar(det_base, resultado)
+    x = float_a_entero(resultado[0][0])
+    y = float_a_entero(resultado[1][0])
+    z = float_a_entero(resultado[2][0])
+    return resultado,x,y,z
+    
 
-ImprimirMatriz(multiplicacion_escalar(5,matrizA))
+
+############################################### Ejecucion: ########################
+
+matrizA = [
+    [2,6,1,7],
+    [1,2,-1,-1],
+    [5,7,-4,9]
+]
+matrizB,independiente = matriz_independientes(matrizA)
+ImprimirMatriz(matrizB)
+print()
+ImprimirMatriz(independiente)
+print()
+
+ressss,x,y,z = algebra_matricial(matrizA)
+ImprimirMatriz(ressss)
+print(x,y,z)
+
