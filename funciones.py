@@ -41,6 +41,8 @@ def determinante_matriz(matriz): # Utilizando el metodo de Laplace
             determinante += cofactor
 
         return determinante
+    else:
+        raise ValueError("La matriz no es cuadrada (filas != columnas)")
 
 def llenar_sistema():
     print("Ingrese los datos del sistema de ecuaciones 3x3.")
