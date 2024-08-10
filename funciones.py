@@ -1,13 +1,16 @@
-def LLenarMatriz(nombre):
+def LLenarMatriz(nombre): # Para depuracion
     print("Ingrese los datos de la matriz", nombre)
     filas = int(input("Ingrese el número de filas: "))
     columnas = int(input("Ingrese el número de columnas: "))
-    matriz = [[0 for _ in range(columnas)] for _ in range(filas)]
+    matriz = matriz_vacia(filas, columnas)
     for i in range(len(matriz)):
         for j in range(len(matriz[0])):
             matriz[i][j] = float(input(f"Ingrese el número en la posición {i} , {j}: "))
         
     return matriz
+
+def matriz_vacia(filas, columnas):
+    return [[0 for _ in range(columnas)] for _ in range(filas)]
 
 def ImprimirMatriz(matriz):
     for i in matriz:
@@ -16,15 +19,12 @@ def ImprimirMatriz(matriz):
         print()
 
 def CuadradaONo(matriz):
-    if(len(matriz) != len(matriz[0])):
-        matrizcuadrada = False
-    else:
-        matrizcuadrada = True
-
-    return matrizcuadrada
+    return len(matriz) == len(matriz[0])
 
 def determinante_matriz(matriz): # Utilizando el metodo de Laplace
-    if CuadradaONo(matriz):
+    if not CuadradaONo(matriz):
+        raise ValueError("La matriz no es cuadrada (filas != columnas)")        
+    else:
         if len(matriz) == 1:
             return matriz[0][0]
 
@@ -41,21 +41,18 @@ def determinante_matriz(matriz): # Utilizando el metodo de Laplace
             determinante += cofactor
 
         return determinante
-    else:
-        raise ValueError("La matriz no es cuadrada (filas != columnas)")
+        
 
 def llenar_sistema():
     print("Ingrese los datos del sistema de ecuaciones 3x3.")
-    filas = 3
-    columnas = 4
-    matriz = [[0 for _ in range(columnas)] for _ in range(filas)]
+    matriz = matriz_vacia(3, 4)
     for i in range(len(matriz)):
         print(f"Ingrese los valores de la ecuación {i+1}:")
         for j in range(len(matriz[0])):
             if j == columnas - 1:
                 valor = float(input(f"Ingrese el valor independiente: "))
             else:
-                valor = float(input(f"Ingrese el coeficiente de la variable x{j+1}: "))
+                valor = float(input(f"Ingrese el coeficiente de la variable {j+1}: "))
             matriz[i][j] = valor
         
     return matriz
@@ -107,5 +104,33 @@ def matriz_adjunta(matriz):
     cofactor = cofactor_matriz(matriz)
     return transponer_matriz(cofactor)
 
-sistemaA = llenar_sistema()
-cramer(sistemaA)
+def multiplicacion_posible(matrizA, matrizB):
+    return len(matrizA[0]) == len(matrizB)
+
+def multiplicacion_matrices(matrizA, matrizB):
+    if not multiplicacion_posible(matrizA, matrizB):
+        raise ValueError("No se puede multiplicar estas matrices (numero de columnas de A != numero de filas de B)")
+    else:        
+        filas = len(matrizA)
+        columnas = len(matrizB[0])
+        matrizResultante = [[0 for _ in range(columnas)] for _ in range(filas)]
+        for i in range(filas):
+            for j in range(columnas):
+                for k in range(len(matrizA[0])):
+                    matrizResultante[i][j] += float_a_entero(matrizA[i][k] * matrizB[k][j])
+        return matrizResultante
+
+def multiplicacion_escalar(numero, matriz):
+    resultado = matriz_vacia(len(matriz),len(matriz[0]))
+    for i in range(len(matriz)):
+        for j in range(len(matriz[0])):
+            resultado[i][j] = numero * matriz[i][j]
+    return resultado
+
+matrizA = [
+    [1,0,0],
+    [0,1,0],
+    [0,0,1]
+]
+
+ImprimirMatriz(multiplicacion_escalar(5,matrizA))
