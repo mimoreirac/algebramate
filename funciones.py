@@ -17,10 +17,13 @@ def float_a_entero(numero): # Para facilitar la lectura, si el número no es fra
         return int(numero)
     return numero
 
-def ImprimirMatriz(matriz):
+def ImprimirMatriz(matriz, paso=""):
+    print(f"\n{paso}")
+    print()
+    ancho = max(len(f"{j:.2f}") for i in matriz for j in i)
     for i in matriz:
         for j in i:
-            print(j, end=" ")
+            print(f"{j:{ancho}.2f}", end="  ")
         print()
 
 def CuadradaONo(matriz):
@@ -62,43 +65,62 @@ def llenar_sistema():
     return matriz
 
 def matrices_modificadas(matriz): # Para poder utilizar el metodo de Cramer
-    matrices = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(4)] # Lista de matrices para generar 4 matrices 3x3
+    matrices = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(3)] # Lista de matrices para generar 3 matrices 3x3
 
-    for i in range(4): # matrices
+    for i in range(3): # matrices
         for j in range(3): # filas
             for k in range(3): # columnas
-                if i < 3 and k == i:
-                    matrices[i][j][k] = matriz[j][3] # Cambia la columna por términos independientes
+                matrices[i][j][k] = matriz[j][3] # Cambia la columna por términos independientes
+                if k == i:
+                    matrices[i][j][k] = matriz[j][3]  # Cambia la columna i por términos independientes
                 else:
-                    matrices[i][j][k] = matriz[j][k] # Para la última matriz, descarta los independientes
+                    matrices[i][j][k] = matriz[j][k]  # Mantiene los coeficientes originales
 
-    return matrices[0], matrices[1], matrices[2], matrices[3]
+    return matrices[0], matrices[1], matrices[2]
 
-def matriz_independientes(matriz):
+def terminos_indep(matriz):
+    if not len(matriz) == 3 or not len(matriz[0]) == 4:
+        raise ValueError("No es una matriz 3x4")
+    else:
+        m_indep = matriz_vacia(len(matriz),1)
+        for i in range(len(m_indep)):
+                for j in range(len(m_indep[0])):
+                    m_indep[i][j] = matriz[i][3]
+
+def matriz_coeficientes(matriz):
     if not len(matriz) == 3 or not len(matriz[0]) == 4:
         raise ValueError("No es una matriz 3x4")
     else:
         matrizA = matriz_vacia(3,3)
-        independientes = matriz_vacia(len(matriz),1)
-        for i in range(len(independientes)):
-            for j in range(len(independientes[0])):
-                independientes[i][j] = matriz[i][3]
         for i in range(len(matrizA)):
             for j in range(len(matrizA[0])):
                 matrizA[i][j] = matriz[i][j]
-        return matrizA, independientes
+        return matrizA
 
-def cramer(sistema):
-    m1,m2,m3,m4 = matrices_modificadas(sistema)
-    det_Ax = float_a_entero(determinante_matriz(m1))
-    det_Ay = float_a_entero(determinante_matriz(m2))
-    det_Az = float_a_entero(determinante_matriz(m3))
-    det_A = float_a_entero(determinante_matriz(m4))
+def cramer(matriz):
+    matrices_mod = matrices_modificadas(matriz)
+    etiquetas = ["Ax", "Ay", "Az"]
+    
+    for i, m in enumerate(matrices_mod):
+        ImprimirMatriz(m, f"Matriz modificada {etiquetas[i]}")
+    
+    matriz_coef = matriz_coeficientes(matriz)
+    ImprimirMatriz(matriz_coef, "Matriz de coeficientes A")
+
+    determinantes = [float_a_entero(determinante_matriz(m)) for m in matrices_mod]
+    det_A = float_a_entero(determinante_matriz(matriz_coef))
+    print()
+    for i, etiqueta in enumerate(etiquetas):
+        print(f"Determinante {etiqueta}: {determinantes[i]}")
+    
+    print(f"Determinante A: {det_A}")
+    
     if det_A == 0:
-        raise ValueError("El sistema no tiene solución única (determinante del sistema es cero)")
-    x,y,z = (float_a_entero(det_i / det_A) for det_i in (det_Ax, det_Ay, det_Az))
-
+        raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)")
+    x, y, z = (float_a_entero(det_i / det_A) for det_i in determinantes)
+    
     return x,y,z
+
 
 def transponer_matriz(matriz):
     return [[matriz[j][i] for j in range(len(matriz))] for i in range(len(matriz[0]))]
@@ -148,9 +170,51 @@ def algebra_matricial(matriz):
     y = float_a_entero(resultado[1][0])
     z = float_a_entero(resultado[2][0])
     return resultado,x,y,z
+
+###### Probando cosas para Gauss
+def volver_uno(matriz, pivote):
+    col = len(matriz[0])
+    if matriz[pivote][pivote] == 0:
+        raise ValueError("No se puede dividir para 0")
+
+    divisor = matriz[pivote][pivote]
+    for j in range(col):
+        matriz[pivote][j] /= divisor
+    ImprimirMatriz(matriz, f"Después de volver 1 el pivote en la fila {pivote + 1}")
     
 
+def volver_cero(matriz, fila, columna):
+    col = len(matriz[0])
+    if matriz[fila][columna] != 0:
+        multiplicando = matriz[fila][columna]
+        for j in range(col):
+            matriz[fila][j] -= multiplicando * matriz[columna][j]
+    ImprimirMatriz(matriz, f"Después de volver 0 el elemento en la fila {fila + 1}, columna {columna + 1}")
 
+
+def gauss_jordan(matriz):
+    n = len(matriz)
+    ImprimirMatriz(matriz, "Matriz inicial")
+    for i in range(n):
+        # Encontrar el pivote
+        elemento_max = abs(matriz[i][i])
+        fila_max = i
+        for k in range(i + 1, n):
+            if abs(matriz[k][i]) > elemento_max:
+                elemento_max = abs(matriz[k][i])
+                fila_max = k
+
+        # Intercambiar filas
+        if fila_max != i:
+            matriz[i], matriz[fila_max] = matriz[fila_max], matriz[i]
+            ImprimirMatriz(matriz, f"Después de intercambiar la fila {i + 1} con la fila {fila_max + 1}")
+
+        volver_uno(matriz, i)
+
+        for j in range(n):
+            if i != j:
+                volver_cero(matriz, j, i)
+    return matriz
 ############################################### Ejecucion: ########################
 
 matrizA = [
@@ -158,13 +222,20 @@ matrizA = [
     [1,2,-1,-1],
     [5,7,-4,9]
 ]
-matrizB,independiente = matriz_independientes(matrizA)
-ImprimirMatriz(matrizB)
-print()
-ImprimirMatriz(independiente)
-print()
+# matrizB,independiente = matriz_independientes(matrizA)
+# ImprimirMatriz(matrizB)
+# print()
+# ImprimirMatriz(independiente)
+# print()
 
-ressss,x,y,z = algebra_matricial(matrizA)
-ImprimirMatriz(ressss)
-print(x,y,z)
+# ressss,x,y,z = algebra_matricial(matrizA)
+# ImprimirMatriz(ressss)
+# print(x,y,z)
+
+# ImprimirMatriz(gauss_jordan(matrizA))
+ImprimirMatriz(matrizA, "Matriz inicial")
+valor1,valor2,valor3 = cramer(matrizA)
+print(valor1,valor2,valor3)
+
+
 
