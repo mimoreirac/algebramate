@@ -337,8 +337,8 @@ def monotonia_cubica(derivada):
 
 
 def etiquetar_func(coeficientes, grado):
-    if grado == 1:
-        x = np.linspace(-10, 10, 100) # Genera eje x
+    x = np.linspace(-10, 10, 100) # Genera eje x
+    if grado == 1:        
         # Función lineal: y = ax + b
         a = coeficientes[1]
         b = coeficientes[0]
@@ -353,7 +353,6 @@ def etiquetar_func(coeficientes, grado):
         y = a * x + b
         return x, y, nombre_func
     elif grado == 2:
-        x = np.linspace(-10, 10, 100)
         # Función cuadrática
         a = coeficientes[2]
         b = coeficientes[1]
@@ -372,35 +371,49 @@ def etiquetar_func(coeficientes, grado):
             nombre_func += f" - {abs(c)}"
         
         y = a * x**2 + b * x + c
-        return x, y, nombre_func
 
+    elif grado == 3:
+        a = coeficientes[3]
+        b = coeficientes[2]
+        c = coeficientes[1]
+        d = coeficientes[0]
+        nombre_func = f"y = {a}x^3"
+        if b != 0:
+            nombre_func += f" + {b}x^2" if b > 0 else f" - {abs(b)}x^2"
+        if c != 0:
+            nombre_func += f" + {c}x" if c > 0 else f" - {abs(c)}x"
+        if d != 0:
+            nombre_func += f" + {d}" if d > 0 else f" - {abs(d)}"
+        y = a * x**3 + b * x**2 + c * x + d
+    else:
+        raise ValueError("Esta función solo acepta funciones lineales, cuadráticas y cúbicas")
+    
+    return x, y, nombre_func
 
+def dibujar_grafica(x, y, nombre_func):
+    plt.plot(x, y, label=nombre_func, color='blue')
+    plt.title(f"Gráfica de {nombre_func}")
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.grid(True)
+    plt.axhline(linewidth=2, color='black') # Resalta los ejes en el plano
+    plt.axvline(linewidth=2, color='black')
+    plt.ylim(-10, 10)
+    plt.show()
 
 
 def graficar_funcion(coeficientes, grado):
-    x = np.linspace(-10, 10, 100) # Genera eje x
+    # x = np.linspace(-10, 10, 100) # Genera eje x
     if grado == 1:
         x, y, nombre_func = etiquetar_func(coeficientes, grado)
-        plt.plot(x, y, label=nombre_func, color='blue')
-        plt.title(f"Gráfica de {nombre_func}")
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.legend()
-        plt.grid(True)
-        plt.axhline(linewidth=2, color='black') # Resalta los ejes en el plano
-        plt.axvline(linewidth=2, color='black')
-        plt.show()
+        dibujar_grafica(x, y, nombre_func)
     elif grado == 2:
         x, y, nombre_func = etiquetar_func(coeficientes, grado)
-        plt.plot(x, y, label=nombre_func, color='blue')
-        plt.title(f"Gráfica de {nombre_func}")
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.legend()
-        plt.grid(True)
-        plt.axhline(linewidth=2, color='black') # Resalta los ejes en el plano
-        plt.axvline(linewidth=2, color='black')
-        plt.show()
+        dibujar_grafica(x, y, nombre_func)
+    elif grado == 3:
+        x, y, nombre_func = etiquetar_func(coeficientes, grado)
+        dibujar_grafica(x, y, nombre_func)
 
 
 def lineal(funcion):
@@ -435,10 +448,10 @@ def cuadratica(funcion):
     y = corte_y(coeficientes)
     if derivada[1] < 0:
         monotonia = f"Creciente (-∞,{extremo_x}), Decreciente ({extremo_x},+∞)"
-        rango = f"]-∞,{extremo_y}]"
+        rango = f"(-∞,{extremo_y}]"
     else:
         monotonia = f"Decreciente (-∞,{extremo_x}), Creciente ({extremo_x},+∞)"
-        rango = f"]+∞,{extremo_y}]"
+        rango = f"(+∞,{extremo_y}]"
     print()
     print(f"Dominio: {dominio}")
     print(f"Rango: {rango}")
