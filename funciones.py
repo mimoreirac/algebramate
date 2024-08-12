@@ -1,4 +1,7 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import math
+
 # Algebra:
 
 def LLenarMatriz(nombre): # Para depuracion
@@ -253,153 +256,129 @@ def gauss_jordan(matriz):
 
 # Matematicas:
 
-def tipo_funcion():
-    while True:
-        print("¿Qué tipo de función desea resolver?")
-        print("1. Lineal (ax + b)")
-        print("2. Cuadrática (ax^2 + bx + c)")
-        print("3. Cúbica (ax^3 + bx^2 + cx + d)")
-        opcion = input("Ingrese su opción (1, 2, o 3): ")
-        if opcion in ['1', '2', '3']:
-            return int(opcion)
-        print("Opción incorrecta. Por favor elija 1, 2, o 3.")
-
-def leer_funcion(string_funcion, tipo_de_funcion):
-    coeficientes = [0] * (tipo_de_funcion + 1)
-    terminos = string_funcion.replace('-', '+-').split('+')
+def leer_funcion(funcion, tipo):
+    coeficientes = [0] * (tipo + 1)
+    terminos = funcion.replace('-', '+-').split('+')
     for termino in terminos:
+        termino = termino.strip()
         if 'x^3' in termino:
             coeficientes[3] = float(termino.replace('x^3', '') or '1')
         elif 'x^2' in termino:
             coeficientes[2] = float(termino.replace('x^2', '') or '1')
         elif 'x' in termino:
             coeficientes[1] = float(termino.replace('x', '') or '1')
-        else:
-            coeficientes[0] = float(termino or '0')
+        elif termino:
+            coeficientes[0] = float(termino)
     return coeficientes
 
-def evaluar(coeficientes, x):
-    return coeficientes[0] + coeficientes[1]*x + coeficientes[2]*x**2 + coeficientes[3]*x**3
+# def derivar(coeficientes):
+#     for i in coeficientes:
+#         coeficientes[i] = coeficientes[i] * i
+#     return coeficientes
 
+def derivar(coeficientes):
+    derivada = [0] * len(coeficientes)
+    for i in range(1, len(coeficientes)):
+        derivada[i-1] = coeficientes[i] * i
+    return derivada
 
-def dominio_rango(coeficientes):
-    dominio = "Todos los números reales"
-    if coeficientes[3] != 0 or coeficientes[1] != 0:  # Cúbica y lineal
-        rango = "Todos los números reales"
-    elif coeficientes[2] != 0:  # Cuadrática
-        vertice_y = evaluar(coeficientes, -coeficientes[1] / (2*coeficientes[2]))
-        if coeficientes[2] > 0:
-            rango = f"[{vertice_y}, +∞)"
+def corte_y(coeficientes):
+    return coeficientes[0]
+
+def corte_x(coeficientes, grado):
+    if grado == 1: # Ecuación lineal
+        a = coeficientes[1]
+        b = coeficientes[0]
+        if a == 0:
+            if b == 0:
+                return "Existen infinitas soluciones"  # 0 = 0 
+            else:
+                return "No existe solución"  # b ≠ 0 y a = 0 (no se puede dividir por 0)
         else:
-            rango = f"(-∞, {vertice_y}]"
-    else:  # Constante
-        rango = str(coeficientes[0])
-    return dominio, rango
-
-def sacar_raices(coeficientes):
-    grado = len(coeficientes) - 1
-    if grado == 3:  # Cúbica
-        raices = np.roots(coeficientes[::-1])  # NumPy recibe los coeficientes en orden ascendente
-        return [root.real for raiz in raices if abs(root.imag) < 1e-10]  # Para utilizar solamente raíces reales
-    elif grado == 2:  # Cuadrática
-        a, b, c = coeficientes[2], coeficientes[1], coeficientes[0]
+            return -b / a
+    elif grado == 2: # Ecuación cuadrática
+        a = coeficientes[2]
+        b = coeficientes[1]
+        c = coeficientes[0]
         discriminante = b**2 - 4*a*c
+
         if discriminante > 0:
-            return [(-b + np.sqrt(discriminante)) / (2*a), (-b - np.sqrt(discriminante)) / (2*a)]
+            x1 = (-b + math.sqrt(discriminante)) / (2 * a) # Fórmula general
+            x2 = (-b - math.sqrt(discriminante)) / (2 * a)
+            return x1, x2
         elif discriminante == 0:
-            return [-b / (2*a)]
+            return -b / (2 * a) # Solo existe una raíz
         else:
-            return []
-    elif grado == 1:  # Lineal
-        return [-coeficientes[0] / coeficientes[1]] if coeficientes[1] != 0 else []
-    else:  # Constante
-        return [] if coeficientes[0] != 0 else ["Todos los números reales"]
+            return "No tiene punto de corte con el eje X" # Raíces complejas
 
-def puntos_corte(coeficientes):
-    corte_y = coeficientes[0]
-    corte_x = sacar_raices(coeficientes)
-    return corte_x, corte_y
-
-def monotonia(coeficientes):
-    grado = len(coeficientes) - 1
-    if grado == 3:  # Cúbica
-        a, b, c, d = coeficientes[3], coeficientes[2], coeficientes[1], coeficientes[0]
-        # Coeficientes de la derivada
-        coef_derivada = [3*a, 2*b, c]
-        # Encontrar puntos críticos
-        puntos_criticos = np.roots(coef_derivada)
-        criticos_reales = [x.real for x in puntos_criticos if abs(x.imag) < 1e-10]
-        criticos_reales.sort()
-
-        if len(criticos_reales) == 2:
-            x1, x2 = criticos_reales
-            if 3*a*x1**2 + 2*b*x1 + c > 0:
-                return f"Decreciente (-∞, {x1:.2f}), creciente ({x1:.2f}, {x2:.2f}), decreciente ({x2:.2f}, +∞)"
-            else:
-                return f"Creciente (-∞, {x1:.2f}), decreciente ({x1:.2f}, {x2:.2f}), creciente ({x2:.2f}, +∞)"
-        elif len(criticos_reales) == 1:
-            x1 = criticos_reales[0]
-            if 3*a*x1**2 + 2*b*x1 + c > 0:
-                return f"Decreciente (-∞, {x1:.2f}), Creciente ({x1:.2f}, +∞)"
-            else:
-                return f"Creciente (-∞, {x1:.2f}), Decreciente ({x1:.2f}, +∞)"
+def graficar_funcion(coeficientes, grado):
+    x = np.linspace(-10, 10, 100) # Genera eje x
+    if grado == 1:
+        y = coeficientes[1] * x + coeficientes[0]
+        plt.figure(figsize = (10, 10))
+        if coeficientes[0] > 0: # Para etiquetar la función dentro de la gráfica
+            nombre_func = f"y = {coeficientes[1]}x + {coeficientes[0]}"
+        elif coeficientes[0] == 0:
+            nombre_func = f"y = {coeficientes[1]}x"
         else:
-            return "Creciente" if a > 0 else "Decreciente"
+            nombre_func = f"y = {coeficientes[1]}x {coeficientes[0]}"
+        plt.plot(x, y, label=nombre_func, color='blue')
+        plt.title(f"Gráfica de {nombre_func}")
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+        plt.grid(True)
+        plt.axhline(linewidth=2, color='black') # Resalta los ejes en el plano
+        plt.axvline(linewidth=2, color='black')
+        plt.show()
+    elif grado == 2:
+        print()
 
-    elif grado == 2:  # Cuadrática
-        a, b, c = coeficientes[2], coeficientes[1], coeficientes[0]
-        vertice_x = -b / (2*a)
-        if a > 0:
-            return f"Decreciente (-∞, {vertice_x:.2f}), creciente ({vertice_x:.2f}, +∞)"
-        else:
-            return f"Creciente (-∞, {vertice_x:.2f}), decreciente ({vertice_x:.2f}, +∞)"
 
-    elif grado == 1:  # Lineal
-        return "Creciente" if coeficientes[1] > 0 else "Decreciente"
-
-    else:  # Constante
-        return "Constante"
-
-def menu_funciones():
-    tipo_func = tipo_funcion()
-    while True:
-        if tipo_func == 1:
-            string_funcion = input("Ingrese una función lineal (ej: 2x + 1): ")
-        elif tipo_func == 2:
-            string_funcion = input("Ingrese una función cuadrática (ej: 2x^2 + 3x - 1): ")
-        else:
-            string_funcion = input("Ingrese una función cúbica (ej: 2x^3 + 3x^2 - x + 1): ")
-        
-        # if validate_function(string_funcion, tipo_func):
-        #     break
-        # print("Invalid function format. Please try again.")
-        break
-    
-    coeficientes = leer_funcion(string_funcion, tipo_func)
-    
-    dominio, rango = dominio_rango(coeficientes)
-    monotonia = monotonia(coeficientes)
-    corte_x, corte_y = puntos_corte(coeficientes)
-    
+def lineal(funcion):
+    grado = 1
+    dominio = "Todos los números reales."
+    rango = "Todos los números reales."
+    coeficientes = leer_funcion(funcion, grado)
+    derivada = derivar(coeficientes)
+    x = corte_x(coeficientes, grado)
+    y = corte_y(coeficientes)
+    if derivada[grado] > 0:
+        monotonia = "Creciente ]-∞,+∞["
+    else:
+        monotonia = "Decreciente ]-∞,+∞["
+    print()
     print(f"Dominio: {dominio}")
     print(f"Rango: {rango}")
     print(f"Monotonía: {monotonia}")
-    print(f"Puntos de corte con x: {corte_x}")
-    print(f"Puntos de corte con y: {corte_y}")
-############################################### Ejecucion: ########################
+    print(f"Punto de corte en X: {x}")
+    print(f"Punto de corte en Y: {y}")
+    graficar_funcion(coeficientes, grado)
+    return dominio, rango, monotonia, x, y
+
+def cuadratica(funcion):
+    dominio = "Todos los números reales."
+    rango = ""
+    return dominio, rango
+
+def cubica(funcion):
+    dominio = "Todos los números reales."
+    rango = "Todos los números reales."
+    return dominio, rango
+
+# Menus
 
 def menu_principal():
     while True:
         print()
         print("Bienvenido a la calculadora. ¿Qué tipo de problema desea resolver?")
-        print("1. Funciones")
+        print("1. Funciones Matemáticas")
         print("2. Sistemas de Ecuaciones 3x3")
         print("3. Salir")
         opcion = int(input("Ingrese su opción (1, 2, o 3): "))
         match opcion:
             case 1:
-                print("Aún no implementado")
-                break
+                menu_funciones()
             case 2:
                 menu_sistemas()                
             case 3:
@@ -433,32 +412,31 @@ def menu_sistemas():
             case _:
                 print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
 
+def menu_funciones():
+    while True:
+        print()
+        print("¿Qué tipo de función?")
+        print("1. Lineal")
+        print("2. Cuadrática")
+        print("3. Cúbica")
+        print("4. Volver al menú principal.")
+        opcion = int(input("Ingrese su opción (1, 2, 3 o 4): "))
+        match opcion:
+            case 1:
+                print("Funciones lineales")
+                funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
+                lineal(funcion)
+            case 2:
+                print("Método de Álgebra Matricial")
+                algebra_matricial(llenar_sistema())
+            case 3:
+                print("Método de Gauss-Jordan")
+                gauss_jordan(llenar_sistema())
+            case 4:
+                return
+            case _:
+                print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
+
 
 menu_principal()
     
-        
-        
-
-
-# matrizA = [
-#     [2,6,1,7],
-#     [1,2,-1,-1],
-#     [5,7,-4,9]
-# ]
-
-
-# matrizB,independiente = matriz_independientes(matrizA)
-# ImprimirMatriz(matrizB)
-# print()
-# ImprimirMatriz(independiente)
-# print()
-
-# ressss,x,y,z = algebra_matricial(matrizA)
-# ImprimirMatriz(ressss)
-# print(x,y,z)
-
-# ImprimirMatriz(gauss_jordan(matrizA))
-# ImprimirMatriz(matrizA, "Matriz inicial")
-# valor1,valor2,valor3 = cramer(matrizA)
-# print(valor1,valor2,valor3)
-# menu_funciones()
