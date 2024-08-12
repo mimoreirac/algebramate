@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import numpy.polynomial.polynomial as poly
 
 # Algebra:
 
@@ -277,11 +278,6 @@ def leer_funcion(funcion, tipo):
             coeficientes[0] = float(termino)
     return coeficientes
 
-# def derivar(coeficientes):
-#     for i in coeficientes:
-#         coeficientes[i] = coeficientes[i] * i
-#     return coeficientes
-
 def derivar(coeficientes):
     derivada = [0] * len(coeficientes)
     for i in range(1, len(coeficientes)):
@@ -316,6 +312,29 @@ def corte_x(coeficientes, grado):
             return -b / (2 * a) # Solo existe una raíz
         else:
             return "No tiene punto de corte con el eje X" # Raíces complejas
+
+def monotonia_cubica(derivada):    
+    c,b,a,d = derivada
+    discriminante = b**2 - 4 * a * c
+
+    if discriminante > 0:
+        # Dos puntos criticos
+        x1 = (-b + np.sqrt(discriminante)) / (2 * a)
+        x2 = (-b - np.sqrt(discriminante)) / (2 * a)
+        critical_points = [x1, x2]
+    elif discriminante == 0:
+        # Un solo punto critico
+        x = -b / (2 * a)
+        critical_points = [x]
+    else:
+        # No existen puntos críticos reales, la función es solamente creciente o decreciente.
+        critical_points = []
+
+    if a > 0:
+        return "Creciente en los intervalos (-∞, {1}) y ({0}, +∞) , Decreciente en ({1}, {0})".format(*critical_points) if len(critical_points) == 2 else "Creciente en (-∞, +∞)"
+    elif a < 0:
+        return "Decreciente en los intervalos (-∞, {1}) y ({0}, +∞) , Creciente en ({1}, {0})".format(*critical_points) if len(critical_points) == 2 else "Decreciente en (-∞, +∞)"
+
 
 def etiquetar_func(coeficientes, grado):
     if grado == 1:
@@ -415,10 +434,10 @@ def cuadratica(funcion):
     x = corte_x(coeficientes, grado)
     y = corte_y(coeficientes)
     if derivada[1] < 0:
-        monotonia = f"Creciente ]-∞,{extremo_x}[, Decreciente ]{extremo_x},+∞["
+        monotonia = f"Creciente (-∞,{extremo_x}), Decreciente ({extremo_x},+∞)"
         rango = f"]-∞,{extremo_y}]"
     else:
-        monotonia = f"Decreciente ]-∞,{extremo_x}[, Creciente ]{extremo_x},+∞["
+        monotonia = f"Decreciente (-∞,{extremo_x}), Creciente ({extremo_x},+∞)"
         rango = f"]+∞,{extremo_y}]"
     print()
     print(f"Dominio: {dominio}")
@@ -430,9 +449,22 @@ def cuadratica(funcion):
     return dominio, rango, monotonia, x, y
 
 def cubica(funcion):
+    grado = 3
     dominio = "Todos los números reales."
     rango = "Todos los números reales."
-    return dominio, rango
+    coeficientes = leer_funcion(funcion, grado)
+    derivada = derivar(coeficientes)
+    cortes_x = poly.polyroots(coeficientes) #La libreria numpy.polinomials es más moderna y acepta una lista de coeficientes en orden ascendente
+    y = corte_y(coeficientes)
+    print()
+    print(f"Dominio: {dominio}")
+    print(f"Rango: {rango}")
+    print(f"Monotonía: {monotonia_cubica(derivada)}")
+    for i, corte in enumerate(cortes_x, start=1):
+        print(f"Punto de corte x{i}: {corte}")
+    print(f"Punto de corte en Y: {y}")
+    graficar_funcion(coeficientes, grado)
+    return dominio, rango, cortes_x, y
 
 # Menus
 
@@ -499,11 +531,11 @@ def menu_funciones():
                 #     raise ValueError("Función incorrecta")
                 lineal(funcion)
             case 2:
-                print("Función cuadrática")
+                print("Funciones cuadráticas")
                 cuadratica(input("Ingrese una función cuadrática, ej: (3x^2-2x+1) y = "))
             case 3:
-                print("Método de Gauss-Jordan")
-                gauss_jordan(llenar_sistema())
+                print("Funciones cúbicas")
+                cubica(input("Ingrese una función cúbica, ej: (x^3-x^2-2x+1) y = "))
             case 4:
                 return
             case _:
