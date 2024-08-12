@@ -256,12 +256,18 @@ def gauss_jordan(matriz):
 
 # Matematicas:
 
-def leer_funcion(funcion, tipo):
+def leer_funcion(funcion, tipo): 
     coeficientes = [0] * (tipo + 1)
     terminos = funcion.replace('-', '+-').split('+')
     for termino in terminos:
         termino = termino.strip()
-        if 'x^3' in termino:
+        if termino == '-x': # Para evitar errores, si el coeficiente de un término negativo es 1
+            coeficientes[1] = -1.0
+        elif termino == '-x^2':
+            coeficientes[2] = -1.0
+        elif termino == '-x^3':
+            coeficientes[3] = -1.0
+        elif 'x^3' in termino:
             coeficientes[3] = float(termino.replace('x^3', '') or '1')
         elif 'x^2' in termino:
             coeficientes[2] = float(termino.replace('x^2', '') or '1')
@@ -311,17 +317,51 @@ def corte_x(coeficientes, grado):
         else:
             return "No tiene punto de corte con el eje X" # Raíces complejas
 
+def etiquetar_func(coeficientes, grado):
+    if grado == 1:
+        x = np.linspace(-10, 10, 100) # Genera eje x
+        # Función lineal: y = ax + b
+        a = coeficientes[1]
+        b = coeficientes[0]
+
+        if b > 0:
+            nombre_func = f"y = {a}x + {b}"
+        elif b < 0:
+            nombre_func = f"y = {a}x - {abs(b)}"
+        else:  # b == 0
+            nombre_func = f"y = {a}x"
+
+        y = a * x + b
+        return x, y, nombre_func
+    elif grado == 2:
+        x = np.linspace(-10, 10, 100)
+        # Función cuadrática
+        a = coeficientes[2]
+        b = coeficientes[1]
+        c = coeficientes[0]
+
+        if b > 0:
+            nombre_func = f"y = {a}x^2 + {b}x"
+        elif b < 0:
+            nombre_func = f"y = {a}x^2 - {abs(b)}x"
+        else:  # b == 0
+            nombre_func = f"y = {a}x^2"
+
+        if c > 0:
+            nombre_func += f" + {c}"
+        elif c < 0:
+            nombre_func += f" - {abs(c)}"
+        
+        y = a * x**2 + b * x + c
+        return x, y, nombre_func
+
+
+
+
 def graficar_funcion(coeficientes, grado):
     x = np.linspace(-10, 10, 100) # Genera eje x
     if grado == 1:
-        y = coeficientes[1] * x + coeficientes[0]
-        plt.figure(figsize = (10, 10))
-        if coeficientes[0] > 0: # Para etiquetar la función dentro de la gráfica
-            nombre_func = f"y = {coeficientes[1]}x + {coeficientes[0]}"
-        elif coeficientes[0] == 0:
-            nombre_func = f"y = {coeficientes[1]}x"
-        else:
-            nombre_func = f"y = {coeficientes[1]}x {coeficientes[0]}"
+        x, y, nombre_func = etiquetar_func(coeficientes, grado)
         plt.plot(x, y, label=nombre_func, color='blue')
         plt.title(f"Gráfica de {nombre_func}")
         plt.xlabel('x')
@@ -332,7 +372,16 @@ def graficar_funcion(coeficientes, grado):
         plt.axvline(linewidth=2, color='black')
         plt.show()
     elif grado == 2:
-        print()
+        x, y, nombre_func = etiquetar_func(coeficientes, grado)
+        plt.plot(x, y, label=nombre_func, color='blue')
+        plt.title(f"Gráfica de {nombre_func}")
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+        plt.grid(True)
+        plt.axhline(linewidth=2, color='black') # Resalta los ejes en el plano
+        plt.axvline(linewidth=2, color='black')
+        plt.show()
 
 
 def lineal(funcion):
@@ -343,7 +392,7 @@ def lineal(funcion):
     derivada = derivar(coeficientes)
     x = corte_x(coeficientes, grado)
     y = corte_y(coeficientes)
-    if derivada[grado] > 0:
+    if derivada[0] > 0:
         monotonia = "Creciente ]-∞,+∞["
     else:
         monotonia = "Decreciente ]-∞,+∞["
@@ -357,9 +406,28 @@ def lineal(funcion):
     return dominio, rango, monotonia, x, y
 
 def cuadratica(funcion):
+    grado = 2
     dominio = "Todos los números reales."
-    rango = ""
-    return dominio, rango
+    coeficientes = leer_funcion(funcion, grado)
+    derivada = derivar(coeficientes)
+    extremo_x = corte_x(derivada, 1)
+    extremo_y = ((extremo_x ** 2) * coeficientes[2]) + (extremo_x * coeficientes[1]) + coeficientes[0]
+    x = corte_x(coeficientes, grado)
+    y = corte_y(coeficientes)
+    if derivada[1] < 0:
+        monotonia = f"Creciente ]-∞,{extremo_x}[, Decreciente ]{extremo_x},+∞["
+        rango = f"]-∞,{extremo_y}]"
+    else:
+        monotonia = f"Decreciente ]-∞,{extremo_x}[, Creciente ]{extremo_x},+∞["
+        rango = f"]+∞,{extremo_y}]"
+    print()
+    print(f"Dominio: {dominio}")
+    print(f"Rango: {rango}")
+    print(f"Monotonía: {monotonia}")
+    print(f"Punto de corte en X: {x}")
+    print(f"Punto de corte en Y: {y}")
+    graficar_funcion(coeficientes, grado)
+    return dominio, rango, monotonia, x, y
 
 def cubica(funcion):
     dominio = "Todos los números reales."
@@ -370,6 +438,8 @@ def cubica(funcion):
 
 def menu_principal():
     while True:
+        print()
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print()
         print("Bienvenido a la calculadora. ¿Qué tipo de problema desea resolver?")
         print("1. Funciones Matemáticas")
@@ -425,10 +495,12 @@ def menu_funciones():
             case 1:
                 print("Funciones lineales")
                 funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
+                # if len(leer_funcion(funcion, 1)) > 2:
+                #     raise ValueError("Función incorrecta")
                 lineal(funcion)
             case 2:
-                print("Método de Álgebra Matricial")
-                algebra_matricial(llenar_sistema())
+                print("Función cuadrática")
+                cuadratica(input("Ingrese una función cuadrática, ej: (3x^2-2x+1) y = "))
             case 3:
                 print("Método de Gauss-Jordan")
                 gauss_jordan(llenar_sistema())
