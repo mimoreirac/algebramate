@@ -390,50 +390,52 @@ def menu_funciones():
 
 def menu_principal():
     while True:
+        print()
         print("Bienvenido a la calculadora. ¿Qué tipo de problema desea resolver?")
         print("1. Funciones")
         print("2. Sistemas de Ecuaciones 3x3")
         print("3. Salir")
-        opcion = input("Ingrese su opción (1, 2, o 3): ")
-        if opcion in ['1', '2', '3']:
-            return int(opcion)
-        print("Opción incorrecta. Por favor elija 1, 2, o 3.")
+        opcion = int(input("Ingrese su opción (1, 2, o 3): "))
+        match opcion:
+            case 1:
+                print("Aún no implementado")
+                break
+            case 2:
+                menu_sistemas()                
+            case 3:
+                print()
+                print("Adiós...")
+                return
+            case _:
+                print("Opción incorrecta. Por favor elija 1, 2, o 3.")
 
 def menu_sistemas():
     while True:
+        print()
         print("¿Qué método desea aplicar?")
         print("1. Método de Cramer")
         print("2. Método de Álgebra Matricial")
         print("3. Método de Gauss-Jordan")
-        print("4. Salir")
-        opcion = input("Ingrese su opción (1, 2, 3 o 4): ")
-        if opcion in ['1', '2', '3', '4']:
-            return int(opcion)
-        print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
+        print("4. Volver al menú principal.")
+        opcion = int(input("Ingrese su opción (1, 2, 3 o 4): "))
+        match opcion:
+            case 1:
+                print("Método de Cramer")
+                cramer(llenar_sistema())
+            case 2:
+                print("Método de Álgebra Matricial")
+                algebra_matricial(llenar_sistema())
+            case 3:
+                print("Método de Gauss-Jordan")
+                gauss_jordan(llenar_sistema())
+            case 4:
+                return
+            case _:
+                print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
 
 
-opcion = menu_principal()
-while True:
-    match opcion:
-        case 1:
-            break
-        case 2:
-            while True:
-                opcion = menu_sistemas()
-                match opcion:
-                    case 1:
-                        print("Método de Cramer")
-                        cramer(llenar_sistema())
-                    case 2:
-                        print("Método de Álgebra Matricial")
-                        algebra_matricial(llenar_sistema())
-                    case 3:
-                        print("Método de Gauss-Jordan")
-                        gauss_jordan(llenar_sistema())
-                    case 4:
-                        break
-        case 3:
-            break
+menu_principal()
+    
         
         
 
