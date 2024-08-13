@@ -20,14 +20,36 @@ def float_a_entero(numero): # Para facilitar la lectura, si el número no es fra
         return int(numero)
     return numero
 
-def ImprimirMatriz(matriz, paso=""): # Recibe una matriz, y opcionalemente imprime paso
+# def ImprimirMatriz(matriz, paso=""): # Recibe una matriz, y opcionalemente imprime paso
+#     print(f"\n{paso}")
+#     print()
+#     ancho = max(len(f"{j:.2f}") for i in matriz for j in i) # Aumenta el ancho de las columnas de acuerdo al ancho del término mas grande, para mejorar presentación
+#     for i in matriz:
+#         for j in i:
+#             print(f"{j:{ancho}.2f}", end="  ") # Formato para números
+#         print()
+
+def ImprimirMatriz(matriz, paso="", precision=2): # Tomado de la implementación de Said Navarrete, con modificaciones
+    filas = len(matriz)
+    columnas = len(matriz[0])
+    
+    # Formato dinámico
+    formato = f"{{:>7.{precision}f}}"
+
     print(f"\n{paso}")
     print()
-    ancho = max(len(f"{j:.2f}") for i in matriz for j in i) # Aumenta el ancho de las columnas de acuerdo al ancho del término mas grande, para mejorar presentación
-    for i in matriz:
-        for j in i:
-            print(f"{j:{ancho}.2f}", end="  ") # Formato para números
-        print()
+    
+    # Imprimir borde superior
+    print("┌" + "───────" * columnas + "┐")
+    
+    # Imprimir filas
+    for fila in matriz:
+        print("│", end="")
+        print(" ".join(formato.format(valor) for valor in fila), end="")
+        print(" │")
+    
+    # Borde inferior
+    print("└" + "───────" * columnas + "┘")
 
 def CuadradaONo(matriz):
     return len(matriz) == len(matriz[0])
@@ -488,12 +510,13 @@ def cubica(funcion): # Obtiene los valores de las funciones cúbicas
 def menu_principal():
     while True:
         print()
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("┌" + "───────" * 4 + "┐")
         print()
         print("Bienvenido a la calculadora. ¿Qué tipo de problema desea resolver?")
         print("1. Funciones Matemáticas")
         print("2. Sistemas de Ecuaciones 3x3")
         print("3. Salir")
+        print("└" + "───────" * 4 + "┘")
         opcion = input("Ingrese su opción (1, 2, o 3): ")
         match opcion:
             case "1":
@@ -511,11 +534,14 @@ def menu_principal():
 def menu_sistemas():
     while True:
         print()
+        print("┌" + "───────" * 4 + "┐")
+        print()
         print("¿Qué método desea aplicar?")
         print("1. Método de Cramer")
         print("2. Método de Álgebra Matricial")
         print("3. Método de Gauss-Jordan")
         print("4. Volver al menú principal.")
+        print("└" + "───────" * 4 + "┘")
         opcion = input("Ingrese su opción (1, 2, 3 o 4): ")
         match opcion:
             case "1":
@@ -535,11 +561,14 @@ def menu_sistemas():
 def menu_funciones():
     while True:
         print()
+        print("┌" + "───────" * 4 + "┐")
+        print()
         print("¿Qué tipo de función?")
         print("1. Lineal")
         print("2. Cuadrática")
         print("3. Cúbica")
         print("4. Volver al menú principal.")
+        print("└" + "───────" * 4 + "┘")
         opcion = input("Ingrese su opción (1, 2, 3 o 4): ")
         match opcion:
             case "1":
