@@ -5,6 +5,9 @@ import numpy.polynomial.polynomial as poly # Para función cúbica
 
 # Algebra:
 
+def determinante_cero(determinante):
+    return determinante == 0
+
 def validar_numero(ingreso): # Valida que no se ingresen datos que no sean números
     while True:
         try:
@@ -145,16 +148,17 @@ def cramer(matriz): # Aplica la resolución del sistema por el método de cramer
         
         if det_A == 0:
             raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)") # Para evitar error de division por 0
-        x, y, z = (float_a_entero(det_i / det_A) for det_i in determinantes) # Divide el determinante de cada matriz modificada, por el determinante de la matriz A
-        print()
-        print("Soluciones: ")
-        print()
-        print(f"X: {x}")
-        print(f"Y: {y}")
-        print(f"Z: {z}")
-        print()
-        
-        return x,y,z
+        else: 
+            x, y, z = (float_a_entero(det_i / det_A) for det_i in determinantes) # Divide el determinante de cada matriz modificada, por el determinante de la matriz A
+            print()
+            print("Soluciones: ")
+            print()
+            print(f"X: {x}")
+            print(f"Y: {y}")
+            print(f"Z: {z}")
+            print()
+            
+            return x,y,z
     except ValueError as e:
         print(f"Error: {e}")
         return None
@@ -203,29 +207,32 @@ def algebra_matricial(matriz): # Aplica la resolución del sistema con el métod
     matriz_base = matriz_coeficientes(matriz) # Matriz A
     independientes = terminos_indep(matriz) # Matriz 3x1 de términos independientes
     det_coeficientes = determinante_matriz(matriz_base) # Determinante de A
-    det_fraccionaria = 1 / determinante_matriz(matriz_base) # Convierte al determinante de A en un número fraccionario para utilizar la multiplicación escalar
-    resultado = multiplicacion_matrices(matriz_adjunta(matriz_base), independientes) # Multiplica la matriz adjunta y transpuesta de A, por la matriz de términos independientes
-    resultado = multiplicacion_escalar(det_fraccionaria, resultado) # Multiplica el resultado por el determinante fraccionario para obtener las soluciones del sistema
-    x = float_a_entero(resultado[0][0])
-    y = float_a_entero(resultado[1][0])
-    z = float_a_entero(resultado[2][0])
-    ImprimirMatriz(matriz, "Matriz extendida del sistema") # Para comunicar el procedimiento al usuario
-    ImprimirMatriz(matriz_base, "Matriz de coeficientes")
-    ImprimirMatriz(independientes, "Términos independientes")
-    print()
-    print(f"Determinante de la matriz de coeficientes: {det_coeficientes}")
-    ImprimirMatriz(cofactor_matriz(matriz_base), "Matriz adjunta")
-    ImprimirMatriz(matriz_adjunta(matriz_base), "Matriz adjunta transpuesta.")
-    ImprimirMatriz(multiplicacion_matrices(matriz_adjunta(matriz_base), independientes), "Multiplicacion de matriz adjunta, por matriz de independientes.")
-    print()
-    print("Soluciones: ")
-    print()
-    print(f"X: {x}")
-    print(f"Y: {y}")
-    print(f"Z: {z}")
-    print()
+    if determinante_cero(det_coeficientes):
+        raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)") # Para evitar error de division por 0
+    else:
+        det_fraccionaria = 1 / determinante_matriz(matriz_base) # Convierte al determinante de A en un número fraccionario para utilizar la multiplicación escalar
+        resultado = multiplicacion_matrices(matriz_adjunta(matriz_base), independientes) # Multiplica la matriz adjunta y transpuesta de A, por la matriz de términos independientes
+        resultado = multiplicacion_escalar(det_fraccionaria, resultado) # Multiplica el resultado por el determinante fraccionario para obtener las soluciones del sistema
+        x = float_a_entero(resultado[0][0])
+        y = float_a_entero(resultado[1][0])
+        z = float_a_entero(resultado[2][0])
+        ImprimirMatriz(matriz, "Matriz extendida del sistema") # Para comunicar el procedimiento al usuario
+        ImprimirMatriz(matriz_base, "Matriz de coeficientes")
+        ImprimirMatriz(independientes, "Términos independientes")
+        print()
+        print(f"Determinante de la matriz de coeficientes: {det_coeficientes}")
+        ImprimirMatriz(cofactor_matriz(matriz_base), "Matriz adjunta")
+        ImprimirMatriz(matriz_adjunta(matriz_base), "Matriz adjunta transpuesta.")
+        ImprimirMatriz(multiplicacion_matrices(matriz_adjunta(matriz_base), independientes), "Multiplicacion de matriz adjunta, por matriz de independientes.")
+        print()
+        print("Soluciones: ")
+        print()
+        print(f"X: {x}")
+        print(f"Y: {y}")
+        print(f"Z: {z}")
+        print()
 
-    return resultado,x,y,z
+        return resultado,x,y,z
 
 
 def volver_uno(matriz, pivote): # Convierte al pivote (elemento de la diagonal principal) en 1 dividiendolo para si mismo, y divide al resto de elementos de la fila por el mismo término
