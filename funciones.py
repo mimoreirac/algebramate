@@ -209,6 +209,8 @@ def algebra_matricial(matriz): # Aplica la resolución del sistema con el métod
     det_coeficientes = determinante_matriz(matriz_base) # Determinante de A
     if determinante_cero(det_coeficientes):
         raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)") # Para evitar error de division por 0
+        print("El sistema no tiene solución única (determinante de coeficientes es cero)")
+        return None
     else:
         det_fraccionaria = 1 / determinante_matriz(matriz_base) # Convierte al determinante de A en un número fraccionario para utilizar la multiplicación escalar
         resultado = multiplicacion_matrices(matriz_adjunta(matriz_base), independientes) # Multiplica la matriz adjunta y transpuesta de A, por la matriz de términos independientes
