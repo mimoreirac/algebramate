@@ -61,9 +61,9 @@ def llenar_sistema(): # Hace que el usuario llene una matriz 3x4 que representa 
         print(f"Ingrese los valores de la ecuación {i+1}:")
         for j in range(len(matriz[0])):
             if j == len(matriz[0]) - 1:
-                valor = float(input(f"Ingrese el valor independiente: "))
+                valor = float(validar_numero(f"Ingrese el valor independiente: "))
             else:
-                valor = float(input(f"Ingrese el coeficiente de la variable {j+1}: "))
+                valor = float(validar_numero(f"Ingrese el coeficiente de la variable {j+1}: "))
             matriz[i][j] = valor
         
     return matriz
