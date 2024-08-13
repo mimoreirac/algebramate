@@ -208,7 +208,7 @@ def algebra_matricial(matriz): # Aplica la resolución del sistema con el métod
     independientes = terminos_indep(matriz) # Matriz 3x1 de términos independientes
     det_coeficientes = determinante_matriz(matriz_base) # Determinante de A
     if determinante_cero(det_coeficientes):
-        raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)") # Para evitar error de division por 0
+        # raise ValueError("El sistema no tiene solución única (determinante de coeficientes es cero)") # Para evitar error de division por 0
         print("El sistema no tiene solución única (determinante de coeficientes es cero)")
         return None
     else:
