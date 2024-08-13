@@ -552,18 +552,22 @@ def menu_funciones():
                     lineal(funcion)
             case "2":
                 print("Funciones cuadráticas")
-                funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
+                funcion = input("Ingrese una función cuadrática, ej: (3x^2-2x+1) y = ")
                 coeficientes = leer_funcion(funcion, 2)
                 if coeficientes is None or len(coeficientes) != 3:
                     print("Función cuadratica no válida.")
+                elif coeficientes[2] == 0:  # Confirma que sea una función cuadrática
+                    print("No es una función cuadrática, parece ser una función lineal.")
                 else:
                     cuadratica(funcion)
             case "3":
                 print("Funciones cúbicas")
-                funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
+                funcion = input("Ingrese una función cúbica, ej: (x^3+2x^2+x+-5) y = ")
                 coeficientes = leer_funcion(funcion, 3)
                 if coeficientes is None or len(coeficientes) != 4:
                     print("Función cubica no válida.")
+                elif coeficientes[3] == 0:  # Confirma que sea una función lineal
+                    print("No es una función cúbica, parece ser una función de menor grado.")
                 else:
                     cubica(funcion)
             case "4":
