@@ -494,17 +494,18 @@ def menu_principal():
         print("1. Funciones Matemáticas")
         print("2. Sistemas de Ecuaciones 3x3")
         print("3. Salir")
-        opcion = int(input("Ingrese su opción (1, 2, o 3): "))
+        opcion = input("Ingrese su opción (1, 2, o 3): ")
         match opcion:
-            case 1:
+            case "1":
                 menu_funciones()
-            case 2:
+            case "2":
                 menu_sistemas()                
-            case 3:
+            case "3":
                 print()
                 print("Adiós...")
                 return
             case _:
+                print()
                 print("Opción incorrecta. Por favor elija 1, 2, o 3.")
 
 def menu_sistemas():
@@ -515,18 +516,18 @@ def menu_sistemas():
         print("2. Método de Álgebra Matricial")
         print("3. Método de Gauss-Jordan")
         print("4. Volver al menú principal.")
-        opcion = int(input("Ingrese su opción (1, 2, 3 o 4): "))
+        opcion = input("Ingrese su opción (1, 2, 3 o 4): ")
         match opcion:
-            case 1:
+            case "1":
                 print("Método de Cramer")
                 cramer(llenar_sistema())
-            case 2:
+            case "2":
                 print("Método de Álgebra Matricial")
                 algebra_matricial(llenar_sistema())
-            case 3:
+            case "3":
                 print("Método de Gauss-Jordan")
                 gauss_jordan(llenar_sistema())
-            case 4:
+            case "4":
                 return
             case _:
                 print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
@@ -539,9 +540,9 @@ def menu_funciones():
         print("2. Cuadrática")
         print("3. Cúbica")
         print("4. Volver al menú principal.")
-        opcion = int(input("Ingrese su opción (1, 2, 3 o 4): "))
+        opcion = input("Ingrese su opción (1, 2, 3 o 4): ")
         match opcion:
-            case 1:
+            case "1":
                 print("Funciones lineales")
                 funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
                 coeficientes = leer_funcion(funcion, 1)
@@ -549,7 +550,7 @@ def menu_funciones():
                     print("Función lineal no válida.")
                 else:
                     lineal(funcion)
-            case 2:
+            case "2":
                 print("Funciones cuadráticas")
                 funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
                 coeficientes = leer_funcion(funcion, 2)
@@ -557,7 +558,7 @@ def menu_funciones():
                     print("Función cuadratica no válida.")
                 else:
                     cuadratica(funcion)
-            case 3:
+            case "3":
                 print("Funciones cúbicas")
                 funcion = input("Ingrese una función lineal, ej: (2x+1) y = ")
                 coeficientes = leer_funcion(funcion, 3)
@@ -565,7 +566,7 @@ def menu_funciones():
                     print("Función cubica no válida.")
                 else:
                     cubica(funcion)
-            case 4:
+            case "4":
                 return
             case _:
                 print("Opción incorrecta. Por favor elija 1, 2, 3 o 4.")
